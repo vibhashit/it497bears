@@ -1,0 +1,114 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title {NFL Statistics - Chicago Bears} 
+\author {Vibhashit Solanki
+\\ School of Information Technology 
+\\ Illinois State University
+\\
+\texttt{vsolank@ilstu.edu}}
+\date{October 20, 2014} 
+\maketitle
+
+\begin{abstract}
+\textbf{Chicago Bears} are a professional \emph{American football} team based in Chicago, Illinois who recorded more regular season and overall victories than any other NFL franchise.
+\end{abstract}
+
+\section{Introduction}
+The \textbf{National Football League} or (NFL) is a professional American football league that constitutes one of the four major professional sports leagues in North America. It is composed of 32 teams divided equally between the \textbf{National Football Conference} (NFC) and the \textbf{American Football Conference} (AFC). The Super Bowl is the annual championship game of the National Football League (NFL), the highest level of professional football in the United States. 
+
+\textbf{Chicago Bears} was founded in Decatur, Illinois, in 1919, and moved to Chicago in 1921. Soldier Field, located on Lake Shore Drive in Chicago, is the current home of the Bears. Marc Trestman is currently the head coach of the Chicago Bears. The \textbf{Green Bay Packers} are one of the Bears' biggest rivals since their team's inception in 1920 whom they have played 186 times. The Bears currently hold the edge in head-to-head matchups with a record of 93-90-6.
+
+
+\section{OSEMN}
+OSEMN will involve Obtaining, Scrubbing, Exploring, Modelling and Interpreting data. We will be using \emph{RStudio} as a tool to compare the stats of Chicago Bears over the years and their performance against other teams. We will also be creating a Bar Graph depicting the number of wins per year by the bears and how their points stack up against their opponents by making a Line Graph as well. 
+
+\subsection{Obtaining Data}
+We will be using data from \textbf{Quandl} which is a search engine for numerical data. For getting Data from \emph{Quandl API}, the User first needs to create an account on \textbf{Quandl} and get the authorization code to retrieve data from it. The code for retrieving the data is given below and you will see how the raw data looks likes also using head command. However, the head command will only show the first 6 observation.
+
+<<>>=
+#Installing quandl packages and using authcode to retrieve data
+
+library(Quandl)
+
+Bears <- Quandl("PROFB/NFL_CHICAGOBEARS",authcode="MgtZ1qcfykfk4fixy3Dz")
+head(Bears)
+
+
+@
+
+\subsection{Scrubbing the Data}
+We only need the following columns for our analysis: Year, Wins, Points and Opponents Points(Ptso). Scrubbing or Cleaning the data is an important step so that it can be displayed properly in table as well as graph form. The code and steps for scrubbing data is given below:
+<<>>=
+
+
+#manual examination reveals that we don't need columns 3 to 5
+Bears.new <- Bears[,-3:-5]
+
+#And now again we don't need columns 5 to 11
+Bears.new2 <- Bears.new[,-5:-10]
+
+#Lets change the name of one of the columnns to a more understandable one
+colnames(Bears.new2)[colnames(Bears.new2)=="Pts0"] <- "OpponentsPoints"
+
+#View all scrubbed observations
+Bears.new2
+
+#Make a csv file of the scrubbed data
+write.csv(Bears.new2, "IT 497 Chicago Bears.csv", row.names=FALSE)
+
+@
+Above code will create a csv file of the data which can be displayed in MS Excel also.
+
+\subsection{Tutorial - Analysis of Data}
+
+<<>>=
+#Summary 
+summary(Bears.new2)
+@
+
+A very useful multipurpose function in R is \emph{summary(X)}, where X can be one of any number of objects, including data sets, variables, and linear models, just to name a few. As you can see in above table, a summary has been generated for each column such as Year, Wins, Points and Opponents Points. A summary depicts the min, mean, max,etc.
+
+<<>>=
+#Class
+class(Bears.new2)
+@
+
+The \emph{class function} shows the data type we are using. For example, we are using a data frame here.
+
+<<>>=
+#Structure
+str(Bears.new2)
+@
+
+The \emph{structure function} shows the the variable names and types. Here we can see the number of observations, variables and the way they are stored. For example, Date is stored in the following format "2013-12-31". Also, we can see other variables such as Wins, Points, Opponents Points and they all are stored in numeric values.
+
+
+\subsection{Plotting Graphs}
+We will be plotting two graphs or charts. One of which is a Bar Graph and the other one a Line Graph.
+
+<<fig=TRUE>>=
+#We will be using ggplot2
+library(ggplot2)
+#To create a bar chart that depicts number of wins per season
+ggplot(data=Bears.new2, aes(x=Year, y=Wins, fill=Wins)) + geom_bar(stat="identity") + 
+  ggtitle("Number of Wins/Season") 
+
+@
+
+The code above the graph will create a graph chart showing \emph{number of wins per season} of Chicago Bears. We will be using Bears.new2 data and keeping Year on X axis and Wins on Y axis in the code. As you may notice, that the highest number of wins were recorded in the 1985 season when they won 15 times and became Super Bowl champions. The season was notable in that the Bears had only one loss, the "unlucky 13th" game of the season, a Monday night affair in which they were defeated by the Miami Dolphins. Also, the lowest number of wins recorded was in the year 1969 which is also known as their struggle era. It is the worst record in the franchise history and they were only able to defeat one team known as \emph{Pittsburgh Steelers}.
+
+<<fig=TRUE>>=
+#To create a line chart that shows Points and Opponents Points
+ggplot(data=Bears.new2, aes(x=Year)) + ylab("Points")+
+  geom_line(aes(y = Points, colour = "Points")) + 
+  geom_line(aes(y = OpponentsPoints, colour = "OpponentsPoints")) + 
+  ggtitle("Bears Points vs Opponents Points") 
+@
+
+The code above the graph will create a Line chart showing \emph{Chicago Bears's Points and their Opponents's Points}. We will be using Bears.new2 data and keeping Year on X axis and Points on Y axis in the code. As you may notice Chicago Bears have performed quite well against their opponents. If you look at the graph then you will notice that in the year 1982, they scored their lowest of 141 points. However, In the year 1985, they scored their highest of 456 points while allowing only 198 points to be scored against them. Not only did the Bears improve on that record, they completed what is still viewed by many as the best season of any team all-time. The 1985 Chicago Bears are one of the few teams to consistently challenge the undefeated 1972 Miami Dolphins for the unofficial title of the greatest NFL team of all time. 
+
+
+\end{document}
